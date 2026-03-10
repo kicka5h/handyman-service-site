@@ -17,10 +17,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 # App source
 COPY . .
 
-# Generate .web/ scaffold, install JS deps, build the frontend
+# Generate .web/ scaffold and install JS deps
 RUN reflex init
 RUN cd .web && bun install
-RUN cd .web && bun run export
+
+# Compile Python components → React, then build the frontend bundle
+# Output lands in .web/build/client/ (what nginx serves)
+RUN reflex export --frontend-only --no-zip
 
 # Drop bun and node_modules — not needed at runtime, frees ~150mb
 RUN rm -rf /root/.bun .web/node_modules
