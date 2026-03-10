@@ -24,7 +24,12 @@ RUN reflex export --frontend-only --no-zip
 EXPOSE 8000
 
 ENV PYTHONUNBUFFERED=1
+# Single Granian worker keeps RSS well under 256mb
+ENV GRANIAN_WORKERS=1
+# Reduce Python allocator fragmentation
+ENV MALLOC_ARENA_MAX=2
 
-# Backend-only mode: serves pre-built static frontend + API + WebSocket
-CMD ["reflex", "run", "--env", "prod", "--backend-only", \
-     "--backend-host", "0.0.0.0", "--backend-port", "8000"]
+COPY start.sh .
+RUN chmod +x start.sh
+
+CMD ["./start.sh"]
