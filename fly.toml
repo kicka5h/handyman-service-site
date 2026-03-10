@@ -25,7 +25,7 @@ primary_region = "sjc"  # San Jose (closest to Seattle on free tier)
     path         = "/_health"
 
 [[vm]]
-  memory   = "512mb"
+  memory   = "256mb"
   cpu_kind = "shared"
   cpus     = 1
 
