@@ -1,0 +1,33 @@
+app = "handyman-service-site"
+primary_region = "sjc"  # San Jose (closest to Seattle on free tier)
+
+[build]
+
+[env]
+  PORT    = "8000"
+  DB_PATH = "/data/submissions.db"
+
+[http_service]
+  internal_port        = 8000
+  force_https          = true
+  auto_stop_machines   = "stop"
+  auto_start_machines  = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval     = "30s"
+    method       = "GET"
+    timeout      = "5s"
+    path         = "/_health"
+
+[[vm]]
+  memory   = "512mb"
+  cpu_kind = "shared"
+  cpus     = 1
+
+# Persistent volume for SQLite — create once with:
+#   fly volumes create handyman_data --size 1 --region sea
+[[mounts]]
+  source      = "handyman_data"
+  destination = "/data"
