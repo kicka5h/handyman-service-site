@@ -6,7 +6,10 @@ from pydantic import BaseModel
 
 from handyman.contact_backend import handle_submission, init_db
 
-init_db()
+try:
+    init_db()
+except Exception as _e:
+    print(f"[DB] Warning: could not initialise database: {_e}")
 
 # ── Brand & Content Data ──────────────────────────────────────────────────────
 

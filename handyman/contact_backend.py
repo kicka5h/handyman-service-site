@@ -22,7 +22,10 @@ load_dotenv()
 
 # On Fly.io, DB_PATH is set to /data/submissions.db via fly.toml [env].
 # Locally it defaults to submissions.db in the project root.
-DB_PATH = Path(os.getenv("DB_PATH", str(Path(__file__).parent.parent / "submissions.db")))
+_default_db = Path(__file__).parent.parent / "submissions.db"
+_configured = Path(os.getenv("DB_PATH", str(_default_db)))
+# Fall back to /tmp if the configured directory doesn't exist (e.g. volume not mounted)
+DB_PATH = _configured if _configured.parent.exists() else Path("/tmp/submissions.db")
 
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
 SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
@@ -129,5 +132,8 @@ Reply directly to this email to reach {name}.
 # ── Combined handler (call this from state + API) ─────────────────────────────
 
 def handle_submission(name: str, email: str, phone: str, message: str) -> None:
-    save_submission(name, email, phone, message)
+    try:
+        save_submission(name, email, phone, message)
+    except Exception as exc:
+        print(f"[DB] Failed to save submission: {exc}")
     send_notification(name, email, phone, message)
