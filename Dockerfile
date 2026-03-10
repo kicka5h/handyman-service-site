@@ -20,7 +20,7 @@ COPY . .
 # Generate .web/ scaffold, install JS deps, build the frontend
 RUN reflex init
 RUN cd .web && bun install
-RUN cd .web && bun run build
+RUN cd .web && bun run export
 
 # Drop bun and node_modules — not needed at runtime, frees ~150mb
 RUN rm -rf /root/.bun .web/node_modules
