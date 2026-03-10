@@ -29,7 +29,4 @@ ENV GRANIAN_WORKERS=1
 # Reduce Python allocator fragmentation
 ENV MALLOC_ARENA_MAX=2
 
-COPY start.sh .
-RUN chmod +x start.sh
-
-CMD ["./start.sh"]
+CMD ["sh", "-c", "reflex db init && exec reflex run --env prod --backend-host 0.0.0.0 --backend-port 8000"]
