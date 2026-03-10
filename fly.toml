@@ -31,6 +31,6 @@ primary_region = "sjc"  # San Jose (closest to Seattle on free tier)
 
 # Persistent volume for SQLite — create once with:
 #   fly volumes create handyman_data --size 1 --region sjc
-# [[mounts]]
-#   source      = "handyman_data"
-#   destination = "/data"
+[[mounts]]
+  source      = "handyman_data"
+  destination = "/data"
