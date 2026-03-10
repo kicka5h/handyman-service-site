@@ -1,8 +1,11 @@
 FROM python:3.11-slim
 
-# unzip is required by Reflex's bun installer
+# Install system deps + bun (Reflex's JS runtime)
 RUN apt-get update && apt-get install -y --no-install-recommends curl unzip && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    curl -fsSL https://bun.sh/install | bash
+
+ENV PATH="/root/.bun/bin:${PATH}"
 
 WORKDIR /app
 
@@ -10,13 +13,11 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# App source (.web is included; node_modules is excluded via .dockerignore)
+# App source
 COPY . .
 
-# Generate .web/, install bun, build the frontend
-# reflex init installs bun to /root/.bun/bin — add it to PATH for subsequent steps
+# Generate .web/ structure, install JS deps, pre-build the frontend
 RUN reflex init
-ENV PATH="/root/.bun/bin:${PATH}"
 RUN cd .web && bun install
 RUN reflex export --frontend-only --no-zip
 
