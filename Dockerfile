@@ -1,9 +1,7 @@
 FROM python:3.11-slim
 
-# Install Node.js 20 (needed to build the Reflex frontend)
-RUN apt-get update && apt-get install -y --no-install-recommends curl && \
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
-    apt-get install -y --no-install-recommends nodejs && \
+# unzip is required by Reflex's bun installer
+RUN apt-get update && apt-get install -y --no-install-recommends curl unzip && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -15,9 +13,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # App source (.web is included; node_modules is excluded via .dockerignore)
 COPY . .
 
-# Generate .web/ project structure, install Node deps, pre-build the frontend
+# Generate .web/, install bun, build the frontend
+# reflex init installs bun to /root/.bun/bin — add it to PATH for subsequent steps
 RUN reflex init
-RUN cd .web && npm install
+ENV PATH="/root/.bun/bin:${PATH}"
+RUN cd .web && bun install
 RUN reflex export --frontend-only --no-zip
 
 EXPOSE 8000
