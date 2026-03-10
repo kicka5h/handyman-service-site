@@ -15,7 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # App source (.web is included; node_modules is excluded via .dockerignore)
 COPY . .
 
-# Install Node dependencies and pre-build the frontend
+# Generate .web/ project structure, install Node deps, pre-build the frontend
+RUN reflex init
 RUN cd .web && npm install
 RUN reflex export --frontend-only --no-zip
 
